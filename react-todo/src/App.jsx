@@ -10,6 +10,8 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [editedTask, setEditedTask] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [previousFocusEl, setPreviousFocusEl] = useState(null);
+
   const addTask = (task) => {
     setTasks((prevState) => [...prevState, task]);
   };
@@ -28,7 +30,7 @@ function App() {
     );
   };
 
-  const updateTask = (task) => {
+  const updateTaskFn = (task) => {
     setTasks((prevState) =>
       prevState.map((t) => (t.id === task.id ? { ...t, name: task.name } : t))
     );
@@ -37,11 +39,13 @@ function App() {
 
   const closeEditMode = () => {
     setIsEditing(false);
+    previousFocusEl.focus();
   };
 
   const enterEditMode = (task) => {
     setEditedTask(task);
     setIsEditing(true);
+    setPreviousFocusEl(document.activeElement);
   };
 
   return (
@@ -51,7 +55,11 @@ function App() {
           <h1>My Task List</h1>
         </header>
         {isEditing && (
-          <EditForm editedTask={editedTask} updateTask={updateTask} />
+          <EditForm
+            editedTask={editedTask}
+            updateTaskFn={updateTaskFn}
+            closeEditMode={closeEditMode}
+          />
         )}
         <CustomForm addTask={addTask} />
         {tasks && (
